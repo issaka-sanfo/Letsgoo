@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<br><br>
+<!--Profile Image and Name-->
+<div class="container my-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-3">
+        <img src="{% static user_data.profile_pic.url %}" class="img-thumbnail" style="width: 150px;height: 200px;"> 
+      </div>
+      <div class="col">
+        <h2 style="margin-top: 80px;" >{{session_obj.first_name}} {{session_obj.last_name}}</h2>
+        <!-- <span class="text-muted"><span class="text-muted" id="count">{{user_data.subscribers.count}}</span> Subscribers</span> -->
+        {% if session_obj != request.user %}
+        {% if subscribed %}
+        <a id="sub_btn" class="btn btn-outline-danger mx-3">Unsubscribe</a>
+        {% else %}
+        <a id="sub_btn" class="btn btn-outline-danger mx-3">Subscribe</a>
+        {% endif %}
+        {% endif %}
+      </div>
+      <div class="col-sm-3">
+        <div class="card" style="width: 15rem;">
+            <div class="card border border-danger bg-success text-light rounded-pill" style="width: 15rem;">
+                <div class="card-body">
+                    <h2 class="card-title text-center">{{counter_access}} TUTO subscribers</h2>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--End of Profile Image and Name-->
+
+<hr>
+<div class="container">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Videos</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">About</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <h3>My TUTOS Channels:</h3>
+      <div class="container">
+        {% for accessTuto_li in accessTuto_lister %}
+        <div class="row">
+          <div class="col">
+            <span style="color:blue">{{accessTuto_li.creator.last_name}}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+      <div class="container">
+        <h3 class="my-3">Uploads</h3>
+        <div class="row my-3">
+          {% if videos %}
+          {% for video in videos %}
+          <div class="col-3">
+            <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;"><img src="{% static video.thumbnail.url %}" style="width: 100%;" class="img-thumbnail"></a>
+            <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;"><h6>{{video.title}}</h6></a>
+            <span class="text-muted">{{video.video_views.all.count}} views • {{video.pub_date}}</span>
+          </div>
+          {% endfor %}
+          {% else %}
+          <h3>No Videos.</h3>
+          {% endif %}
+        </div>
+        <hr>
+
+      </div>
+    </div>
+
+
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+      <div class="container my-4">
+        <p><b>Description</b></p>
+        <pre style="font-family: tahoma; letter-spacing: 1px;"><p>{{user_data.about}}</p></pre>
+        <hr>
+
+        <p><b>Details</b></p>
+        <p>Email: </p>
+        <a href="mailto:{{session_obj.email}}"><p>{{session_obj.email}}</p></a>
+        <hr>
+
+        <p><b>Links: </b></p>
+        <p>Instagram</p>
+        <p>Github</p>
+        <p>Twitter</p>
+        <p>Facebook</p>
+        <hr>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+var btn = $('#sub_btn');
+var count = $('#count');  
+// btn.text('Subscribe');
+btn.on('click', function(event){
+  event.preventDefault();
+
+  $.ajax({
+    type: 'GET',
+    url: '{% url "add_subscriber" session_obj.username %}',
+    dataType: 'json',
+    success: function(data){
+      if(data.is_subscribed)
+      {
+          // alert(data.is_subscribed);
+          btn.text('Subscribe');
+          count.text(data.viewer_obj);
+          console.log(data.viewer_obj);
+        }
+        else
+        {
+         // alert(data.is_subscribed); 
+         btn.text('Unsubscribe');
+         count.text(data.viewer_obj);
+         console.log(data.viewer_obj);
+       }
+     }
+
+   });
+});
+
+
+</script>
+{% endblock %}

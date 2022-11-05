@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body%}
+<br>
+<div class="container border py-4 my-4 w-75">
+    <div class="badge bg-secondary text-wrap" style="width: 6rem;">
+        <h5>Step {{stepsnext}}</h5>
+    </div>
+    <a href="{% url 'watch_video' video.id %}" style="float: right;"><button class="btn btn-success"><i class="bi bi-tv"></i></button></a>
+    <form action="{% url 'upload_step' video.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" id="title" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="desc" class="form-label">Description</label>
+            <textarea class="form-control" name="desc" id="desc" style="height: 200px;"></textarea>
+        </div>
+
+        <div class="form-group files">
+            <label>Video</label>
+            <input type="file" name="fileName" class="form-control" id="filelibel" accept="video/*" required>
+        </div>
+
+        <br>
+        <progress id="progressBar" value="0" max="100" style="width:200px;"></progress>
+        <h3 id="status"></h3>
+        <p id="loaded_n_total"></p>
+
+        <button type="submit" class="btn btn-success" onclick="uploadFile();"><i class="bi bi-save"></i></button>
+    </form>
+    <br>
+</div>
+<script>
+    function _(el) {
+    return document.getElementById(el);
+    }
+
+    function uploadFile() {
+    var file = _("filelibel").files[0];
+    // alert(file.name+" | "+file.size+" | "+file.type);
+    var formdata = new FormData();
+    formdata.append("fileName", file);
+    var ajax = new XMLHttpRequest();
+    ajax.upload.addEventListener("progress", progressHandler, false);
+    ajax.addEventListener("load", completeHandler, false);
+    ajax.addEventListener("error", errorHandler, false);
+    ajax.addEventListener("abort", abortHandler, false);
+    ajax.open("POST", "upload"); // http://www.developphp.com/video/JavaScript/File-Upload-Progress-Bar-Meter-Tutorial-Ajax-PHP
+    //use file_upload_parser.php from above url
+    ajax.send(formdata);
+    }
+
+    function progressHandler(event) {
+    _("loaded_n_total").innerHTML = "Uploaded wait a second :)" + event.loaded + " bytes of " + event.total;
+    var percent = (event.loaded / event.total) * 100;
+    _("progressBar").value = Math.round(percent);
+    _("status").innerHTML = Math.round(percent) + "% uploaded... please wait";
+    }
+
+    function completeHandler(event) {
+    _("status").innerHTML = event.target.responseText;
+    _("progressBar").value = 0; //wil clear progress bar after successful upload
+    }
+
+    function errorHandler(event) {
+    _("status").innerHTML = "";
+    }
+
+    function abortHandler(event) {
+    _("status").innerHTML = "Upload Aborted";
+    }
+</script>
+{% endblock %}

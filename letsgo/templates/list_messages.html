@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<br><br><br>
+
+    <div class="container">
+        <h3>Messages</h3>
+      {% for msg in msgs %}
+        <div class="row">
+            <div class="col">
+                <div class="badge text-warning bg-success ounded-pill">{{msg.subject}}</div>
+            </div>
+            <div class="col">
+                <div>{{msg.message}}</div>
+            </div>
+            <div class="col">
+                <div>{{msg.user}}</div>
+            </div>
+            <hr>
+        </div>
+      {% endfor %}
+    </div>
+
+
+    <script type="text/javascript">
+        var btn = $('.del_btn');
+        btn.on('click',function(event){
+            event.preventDefault();
+            var category = $(this).attr('id');
+        
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "delete_categ" %}',
+                    data: {categId: category},
+                    dataType: 'json',
+                    success: function(data){
+                        if(data.category_id)
+                        {
+                            var category = data.category_id;
+                            $('div').remove('#'+category);
+                        }
+                    }
+                }); 
+                window.location.href = "http://127.0.0.1:8000/list_categories/";
+            });
+    </script>
+{% endblock %}

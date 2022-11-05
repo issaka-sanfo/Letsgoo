@@ -1,0 +1,2 @@
+#!/bin/bash
+npx kill-port 80 && source /home/udoms/env/md/bin/activate && cd /lib.32/try/do/lib && python3 manage.py makemigrations && python3 manage.py migrate && sudo /etc/init.d/nginx restart && uwsgi --ini microdomains_uwsgi.ini

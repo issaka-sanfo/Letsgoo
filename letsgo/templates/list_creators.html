@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<br><br><br>
+<div class="container">
+    <h3>Creators</h3>
+    {% for accessTuto_li in accessTuto_lister %}
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="badge text-dark ounded-pill">{{accessTuto_li.creator_name}}</div>
+        </div>
+        <div class="col">
+            <div class="badge text-warning bg-success ounded-pill">{{accessTuto_li.shop_count}}</div>
+        </div>
+        <hr>
+    </div>
+    {% endfor %}
+</div>
+
+<script type="text/javascript">
+    var btn = $('.del_btn');
+    btn.on('click',function(event){
+        event.preventDefault();
+        var category = $(this).attr('id');
+
+        $.ajax({
+            type: 'GET',
+            url: '{% url "delete_categ" %}',
+            data: {categId: category},
+            dataType: 'json',
+            success: function(data){
+                if(data.category_id)
+                {
+                    var category = data.category_id;
+                    $('div').remove('#'+category);
+                }
+            }
+        });
+        window.location.href = "http://127.0.0.1:8000/list_categories/";
+    });
+</script>
+{% endblock %}

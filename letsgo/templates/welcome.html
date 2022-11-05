@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="row">
+    <div class="col">
+        <br><br><br>
+        <div class="container py-2 my-4 w-auto" style="position: relative;">
+            <div class="row">
+                {% for video in videos %}
+                <div class="col">
+                    {% if video.thumbnail.url != '/media/bad.jpg' %}
+                    <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;">
+                        <img src="{% static video.thumbnail.url %}" width="320" height="180">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;">
+                        <video height="180" autoplay muted controlsList="nodownload">
+                            <source src="{% static video.video_file.url %}" type="video/mp4">
+                        </video>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;">
+                        <h6 style="width:200px;">{{video.title}}</h6>
+                    </a>
+                    {% if request.user.is_superuser %}
+                    <span class="text-muted">{{video.video_views.all.count}} views • {{video.pub_date}}</span>
+                    {% endif %}
+                    <span class="text-muted">{{video.id}}{{video.pub_date.day}}{{video.pub_date.month}} views</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<br><br><br><br><br><br><br>
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  <div class="container">
+    <div class="projects--wrapper">
+      {% for category in categories %}
+        <div class="project--column">
+            <a href="{% url 'filter' category.title %}">
+                <img class="project--thumbnail" src="{% static category.thumbnail.url %}">
+            </a>
+            <div class="project--body">
+              {{category.title}}
+              <!--button class="btn btn-secondary rounded-pill btn-sm" type="button">{{category.title}}</button-->
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</nav>
+    
+{% endblock %}

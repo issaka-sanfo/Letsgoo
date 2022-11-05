@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+<br><br><br>
+{% if video_obj %}
+<div class="row">
+    <div class="col">
+        <div class="container py-2 my-4 w-auto" style="position: relative;">
+          <h3>Video Results: </h3>
+          <div class="row">
+              {% for video in video_obj %}
+              <div class="col">
+                {% if video.thumbnail.url != '/media/bad.jpg' %}
+                <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;">
+                  <img src="{% static video.thumbnail.url %}" width="320" height="180">
+                </a>
+                {% else %}
+                <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;">
+                  <video height="180" autoplay muted controlsList="nodownload">
+                    <source src="{% static video.video_file.url %}" type="video/mp4">
+                  </video>
+                </a>
+                {% endif %}
+                <a href="{% url 'watch_video' video.id %}" style="text-decoration: none;">
+                  <h6 style="width:200px;">{{video.title}}</h6>
+                </a>
+                <span class="text-muted">{{video.id}}{{video.pub_date.day}}{{video.pub_date.month}} views</span>
+          </div>
+              {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container">
+    <h5>No Results Found.</h5>
+</div>
+{% endif %}
+<br><br><br><br><br><br><br>
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  <div class="container">
+    <div class="projects--wrapper">
+      {% for category in categories %}
+        <div class="project--column">
+            <a href="{% url 'filter' category.title %}">
+                <img class="project--thumbnail" src="{% static category.thumbnail.url %}">
+            </a>
+            <div class="project--body">
+              {{category.title}}
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</nav>
+    <!-- <div class="container my-4">
+      <h3>Channels Results: </h3>
+      {% if user_obj %}
+      <div class="row">
+      {% for user in user_obj %}
+      <div class="col-4">
+      <div class="card my-3" style="width: 18rem;">
+          <img src="{% static user.userdata.profile_pic.url %}" class="img-thumbnail card-img-top" style="height: 250px;" alt="...">
+          <div class="card-body">
+              <h5 class="card-title">{{user.username}}</h5>
+              <p class="card-text">{{user.userdata.about|truncatewords:6}}</p>
+              <a href="{% url 'profile' user.username %}" class="btn btn-primary">View Profile</a>
+          </div>
+      </div>
+      </div>
+      {% endfor %}
+      </div>
+      {% else %}
+      <div class="container">
+          <h5>No Results Found.</h5>
+      </div>
+      {% endif %}
+    </div> -->
+{% endblock %}
